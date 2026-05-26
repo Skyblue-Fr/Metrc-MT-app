@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>METRC MT</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0f0e;
+    --surface: #161917;
+    --surface2: #1e2220;
+    --border: #2a2e2b;
+    --accent: #b5f033;
+    --accent-dim: #8ab826;
+    --text: #e8ede9;
+    --text-muted: #6b7568;
+    --text-dim: #9aa396;
+    --danger: #ff4d4d;
+    --warn: #f0a500;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100dvh;
+    overflow-x: hidden;
+    padding-bottom: 90px;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .topbar-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: var(--accent);
+  }
+
+  .topbar-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .topbar-right {
+    text-align: right;
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin-right: 5px;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .status-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  /* NAV TABS */
+  .nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding: 8px 0 20px;
+  }
+
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+    background: none;
+    color: var(--text-muted);
+  }
+
+  .nav-item.active {
+    color: var(--accent);
+  }
+
+  .nav-item svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .nav-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* PAGES */
+  .page { display: none; padding: 20px; }
+  .page.active { display: block; }
+
+  /* DASHBOARD */
+  .greeting {
+    margin-bottom: 24px;
+  }
+
+  .greeting-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .greeting-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 2px;
+    line-height: 1;
+    color: var(--text);
+  }
+
+  .greeting-title span { color: var(--accent); }
+
+  /* STAT CARDS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+  }
+
+  .stat-card.warn::before { background: var(--warn); }
+  .stat-card.neutral::before { background: var(--text-muted); }
+
+  .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    line-height: 1;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* SECTION HEADERS */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .section-action {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    cursor: pointer;
+    background: none;
+    border: none;
+    letter-spacing: 1px;
+  }
+
+  /* JOB CARDS */
+  .job-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    -webkit-user-select: none;
+  }
+
+  .job-card:active { border-color: var(--accent); }
+
+  .job-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-sm);
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 20px;
+  }
+
+  .job-info { flex: 1; min-width: 0; }
+
+  .job-name {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .job-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  .job-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  .badge-active { background: rgba(181,240,51,0.12); color: var(--accent); }
+  .badge-pending { background: rgba(240,165,0,0.12); color: var(--warn); }
+  .badge-done { background: rgba(107,117,104,0.2); color: var(--text-muted); }
+
+  /* QUICK ACTIONS */
+  .quick-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .quick-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    -webkit-user-select: none;
+    color: var(--text);
+  }
+
+  .quick-btn:active { border-color: var(--accent); background: var(--surface2); }
+
+  .quick-btn-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .quick-btn-text {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  /* FORMS */
+  .form-section {
+    margin-bottom: 28px;
+  }
+
+  .form-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .form-subtitle {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .field {
+    margin-bottom: 16px;
+  }
+
+  .field-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .field-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+  }
+
+  .field-input:focus {
+    border-color: var(--accent);
+  }
+
+  .field-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  select.field-input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7568' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 44px;
+    cursor: pointer;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .field-hint {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  /* BUTTONS */
+  .btn-primary {
+    width: 100%;
+    background: var(--accent);
+    color: #0e0f0e;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+    -webkit-user-select: none;
+  }
+
+  .btn-primary:active { background: var(--accent-dim); transform: scale(0.98); }
+
+  .btn-secondary {
+    width: 100%;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    margin-top: 10px;
+    -webkit-user-select: none;
+  }
+
+  /* SUCCESS TOAST */
+  .toast {
+    position: fixed;
+    bottom: 100px;
+    left: 20px;
+    right: 20px;
+    background: var(--accent);
+    color: #0e0f0e;
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    z-index: 200;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* TAG ITEMS */
+  .tag-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .tag-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+
+  .tag-status {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    background: rgba(181,240,51,0.12);
+    color: var(--accent);
+  }
+
+  .tag-status.used {
+    background: rgba(107,117,104,0.2);
+    color: var(--text-muted);
+  }
+
+  /* LIST ITEMS (strains/items) */
+  .list-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .list-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .list-name {
+    font-size: 15px;
+    font-weight: 500;
+    flex: 1;
+  }
+
+  .list-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+  }
+
+  /* SCROLL AREA */
+  .scroll-list {
+    max-height: 300px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+
+  .empty-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  /* API KEY PAGE */
+  .api-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .api-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .api-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    word-break: break-all;
+  }
+
+  .info-card {
+    background: rgba(181,240,51,0.06);
+    border: 1px solid rgba(181,240,51,0.2);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+
+  .info-card-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent-dim);
+    letter-spacing: 0.5px;
+    line-height: 1.6;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div>
+    <div class="topbar-logo">METRC MT</div>
+  </div>
+  <div class="topbar-right">
+    <div><span class="status-dot"></span><span class="status-label">DEMO MODE</span></div>
+    <div class="topbar-sub">3RD PARTY MFG</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- PAGE: DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="greeting">
+    <div class="greeting-date" id="greeting-date"></div>
+    <div class="greeting-title">GOOD <span id="greeting-time">MORNING</span></div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value" id="stat-jobs">3</div>
+      <div class="stat-label">Active Jobs</div>
+    </div>
+    <div class="stat-card warn">
+      <div class="stat-value" id="stat-tags">12</div>
+      <div class="stat-label">Avail. Tags</div>
+    </div>
+    <div class="stat-card neutral">
+      <div class="stat-value" id="stat-items">7</div>
+      <div class="stat-label">Items</div>
+    </div>
+    <div class="stat-card neutral">
+      <div class="stat-value" id="stat-strains">5</div>
+      <div class="stat-label">Strains</div>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <span class="section-title">Quick Create</span>
+  </div>
+
+  <div class="quick-actions">
+    <button class="quick-btn" onclick="showPage('page-jobs')">
+      <span class="quick-btn-icon">⚙️</span>
+      <span class="quick-btn-text">New Process Job</span>
+    </button>
+    <button class="quick-btn" onclick="showPage('page-tags')">
+      <span class="quick-btn-icon">🏷️</span>
+      <span class="quick-btn-text">New Package Tag</span>
+    </button>
+    <button class="quick-btn" onclick="showPage('page-items')">
+      <span class="quick-btn-icon">📦</span>
+      <span class="quick-btn-text">New Item</span>
+    </button>
+    <button class="quick-btn" onclick="showPage('page-strains')">
+      <span class="quick-btn-icon">🌿</span>
+      <span class="quick-btn-text">New Strain</span>
+    </button>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-header">
+    <span class="section-title">Recent Jobs</span>
+    <button class="section-action" onclick="showPage('page-jobs')">VIEW ALL →</button>
+  </div>
+
+  <div id="recent-jobs-list"></div>
+</div>
+
+<!-- PAGE: PROCESSING JOBS -->
+<div class="page" id="page-jobs">
+  <div class="form-section">
+    <div class="form-title">PROCESSING</div>
+    <div class="form-subtitle">CREATE NEW JOB</div>
+
+    <div class="field">
+      <label class="field-label">Job Type</label>
+      <select class="field-input" id="job-type">
+        <option value="">Select type...</option>
+        <option>Extraction</option>
+        <option>Distillation</option>
+        <option>Infusion</option>
+        <option>Trimming</option>
+        <option>Packaging</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Input Package Tag</label>
+      <select class="field-input" id="job-input-tag">
+        <option value="">Select source package...</option>
+        <option>1A406030000E7B4000000001</option>
+        <option>1A406030000E7B4000000002</option>
+        <option>1A406030000E7B4000000003</option>
+      </select>
+      <div class="field-hint">Package being processed</div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Output Item</label>
+      <select class="field-input" id="job-output-item">
+        <option value="">Select output item...</option>
+        <option>Distillate — Full Spectrum</option>
+        <option>Distillate — Broad Spectrum</option>
+        <option>Live Resin</option>
+        <option>RSO</option>
+        <option>Vape Cartridge — 1g</option>
+      </select>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">Input Qty</label>
+        <input class="field-input" type="number" placeholder="0.00" id="job-input-qty">
+      </div>
+      <div class="field">
+        <label class="field-label">Unit</label>
+        <select class="field-input" id="job-unit">
+          <option>Grams</option>
+          <option>Pounds</option>
+          <option>Ounces</option>
+          <option>Each</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Output Package Tag</label>
+      <select class="field-input" id="job-output-tag">
+        <option value="">Assign output tag...</option>
+        <option>1A406030000E7B4000000010</option>
+        <option>1A406030000E7B4000000011</option>
+        <option>1A406030000E7B4000000012</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Output Qty</label>
+      <input class="field-input" type="number" placeholder="0.00" id="job-output-qty">
+    </div>
+
+    <div class="field">
+      <label class="field-label">Notes (optional)</label>
+      <input class="field-input" type="text" placeholder="Batch notes..." id="job-notes">
+    </div>
+
+    <button class="btn-primary" onclick="createJob()">CREATE JOB</button>
+    <button class="btn-secondary" onclick="showPage('page-dashboard')">CANCEL</button>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-header">
+    <span class="section-title">All Jobs</span>
+  </div>
+  <div id="jobs-list"></div>
+</div>
+
+<!-- PAGE: PACKAGE TAGS -->
+<div class="page" id="page-tags">
+  <div class="form-section">
+    <div class="form-title">PACKAGE</div>
+    <div class="form-subtitle">CREATE NEW TAG</div>
+
+    <div class="info-card">
+      <div class="info-card-text">⚡ In live mode, Metrc will assign tag numbers from your inventory. Demo uses sample tag numbers.</div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Package Label / Name</label>
+      <input class="field-input" type="text" placeholder="e.g. Distillate Batch #4" id="tag-label">
+    </div>
+
+    <div class="field">
+      <label class="field-label">Item</label>
+      <select class="field-input" id="tag-item">
+        <option value="">Select item...</option>
+        <option>Distillate — Full Spectrum</option>
+        <option>Distillate — Broad Spectrum</option>
+        <option>Live Resin</option>
+        <option>RSO</option>
+        <option>Vape Cartridge — 1g</option>
+      </select>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">Quantity</label>
+        <input class="field-input" type="number" placeholder="0.00" id="tag-qty">
+      </div>
+      <div class="field">
+        <label class="field-label">Unit</label>
+        <select class="field-input" id="tag-unit">
+          <option>Grams</option>
+          <option>Pounds</option>
+          <option>Ounces</option>
+          <option>Each</option>
+          <option>Milligrams</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Production Date</label>
+      <input class="field-input" type="date" id="tag-date">
+    </div>
+
+    <div class="field">
+      <label class="field-label">Source Package</label>
+      <select class="field-input" id="tag-source">
+        <option value="">Link source package (optional)...</option>
+        <option>1A406030000E7B4000000001</option>
+        <option>1A406030000E7B4000000002</option>
+        <option>1A406030000E7B4000000003</option>
+      </select>
+    </div>
+
+    <button class="btn-primary" onclick="createTag()">CREATE PACKAGE TAG</button>
+    <button class="btn-secondary" onclick="showPage('page-dashboard')">CANCEL</button>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-header">
+    <span class="section-title">Available Tags</span>
+  </div>
+  <div id="tags-list"></div>
+</div>
+
+<!-- PAGE: ITEMS -->
+<div class="page" id="page-items">
+  <div class="form-section">
+    <div class="form-title">ITEMS</div>
+    <div class="form-subtitle">CREATE NEW ITEM</div>
+
+    <div class="field">
+      <label class="field-label">Item Name</label>
+      <input class="field-input" type="text" placeholder="e.g. Distillate — Full Spectrum" id="item-name">
+    </div>
+
+    <div class="field">
+      <label class="field-label">Item Category</label>
+      <select class="field-input" id="item-category">
+        <option value="">Select category...</option>
+        <option>Concentrate (each)</option>
+        <option>Concentrate (weight)</option>
+        <option>Edible (each)</option>
+        <option>Edible (weight)</option>
+        <option>Infused Liquid</option>
+        <option>Tincture</option>
+        <option>Vape Cartridge</option>
+        <option>Other Concentrate</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Unit of Measure</label>
+      <select class="field-input" id="item-uom">
+        <option>Grams</option>
+        <option>Pounds</option>
+        <option>Ounces</option>
+        <option>Each</option>
+        <option>Milligrams</option>
+        <option>Fluid Ounces</option>
+        <option>Milliliters</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Strain (optional)</label>
+      <select class="field-input" id="item-strain">
+        <option value="">No strain / multi-strain</option>
+        <option>Blue Dream</option>
+        <option>OG Kush</option>
+        <option>Gelato #41</option>
+        <option>Wedding Cake</option>
+        <option>Zkittlez</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Administration Method</label>
+      <select class="field-input" id="item-admin">
+        <option value="">Select...</option>
+        <option>Inhaled</option>
+        <option>Oral</option>
+        <option>Sublingual</option>
+        <option>Topical</option>
+        <option>Suppository</option>
+      </select>
+    </div>
+
+    <button class="btn-primary" onclick="createItem()">CREATE ITEM</button>
+    <button class="btn-secondary" onclick="showPage('page-dashboard')">CANCEL</button>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-header">
+    <span class="section-title">Your Items</span>
+  </div>
+  <div id="items-list"></div>
+</div>
+
+<!-- PAGE: STRAINS -->
+<div class="page" id="page-strains">
+  <div class="form-section">
+    <div class="form-title">STRAINS</div>
+    <div class="form-subtitle">CREATE NEW STRAIN</div>
+
+    <div class="field">
+      <label class="field-label">Strain Name</label>
+      <input class="field-input" type="text" placeholder="e.g. Gelato #41" id="strain-name">
+    </div>
+
+    <div class="field">
+      <label class="field-label">Indica / Sativa %</label>
+      <div class="field-row">
+        <div class="field">
+          <input class="field-input" type="number" placeholder="Indica %" id="strain-indica" min="0" max="100">
+        </div>
+        <div class="field">
+          <input class="field-input" type="number" placeholder="Sativa %" id="strain-sativa" min="0" max="100">
+        </div>
+      </div>
+      <div class="field-hint">Must total 100%</div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Testing Status</label>
+      <select class="field-input" id="strain-testing">
+        <option>None</option>
+        <option>InHouse</option>
+        <option>ThirdParty</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label class="field-label">THC % (optional)</label>
+      <input class="field-input" type="number" placeholder="0.00" id="strain-thc" step="0.01">
+    </div>
+
+    <div class="field">
+      <label class="field-label">CBD % (optional)</label>
+      <input class="field-input" type="number" placeholder="0.00" id="strain-cbd" step="0.01">
+    </div>
+
+    <button class="btn-primary" onclick="createStrain()">CREATE STRAIN</button>
+    <button class="btn-secondary" onclick="showPage('page-dashboard')">CANCEL</button>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-header">
+    <span class="section-title">Your Strains</span>
+  </div>
+  <div id="strains-list"></div>
+</div>
+
+<!-- PAGE: SETTINGS -->
+<div class="page" id="page-settings">
+  <div class="form-title" style="margin-bottom:4px;">SETTINGS</div>
+  <div class="form-subtitle" style="margin-bottom:20px;">ACCOUNT & API</div>
+
+  <div class="info-card">
+    <div class="info-card-text">🔒 Your API key is stored only on this device and never shared. It will be used to authenticate directly with Montana's Metrc environment.</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Metrc User API Key</label>
+    <input class="field-input" type="password" placeholder="Paste your key here..." id="api-key-input">
+    <div class="field-hint">Find this in Metrc → top right username → API Keys</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">License Number</label>
+    <input class="field-input" type="text" placeholder="MT-MAN-000000" id="license-input">
+  </div>
+
+  <div class="field">
+    <label class="field-label">Business Name</label>
+    <input class="field-input" type="text" placeholder="Your facility name" id="biz-name-input">
+  </div>
+
+  <button class="btn-primary" onclick="saveSettings()">SAVE SETTINGS</button>
+
+  <div class="divider"></div>
+
+  <div class="api-section">
+    <div class="api-label">Metrc Environment</div>
+    <div class="api-value">api-mt.metrc.com</div>
+  </div>
+
+  <div class="api-section">
+    <div class="api-label">App Version</div>
+    <div class="api-value" style="color: var(--text-dim);">v0.1.0 — PROTOTYPE</div>
+  </div>
+
+  <div class="api-section">
+    <div class="api-label">Mode</div>
+    <div class="api-value" id="mode-display">DEMO (No API Key)</div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="nav">
+  <button class="nav-item active" onclick="showPage('page-dashboard')" id="nav-dashboard">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+      <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+    </svg>
+    <span class="nav-label">HOME</span>
+  </button>
+  <button class="nav-item" onclick="showPage('page-jobs')" id="nav-jobs">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M5.34 18.66l-1.41 1.41M4.93 4.93l1.41 1.41M18.66 18.66l1.41 1.41M12 2v2M12 20v2M2 12h2M20 12h2"/>
+    </svg>
+    <span class="nav-label">JOBS</span>
+  </button>
+  <button class="nav-item" onclick="showPage('page-tags')" id="nav-tags">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
+      <line x1="7" y1="7" x2="7.01" y2="7"/>
+    </svg>
+    <span class="nav-label">TAGS</span>
+  </button>
+  <button class="nav-item" onclick="showPage('page-items')" id="nav-items">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+    </svg>
+    <span class="nav-label">ITEMS</span>
+  </button>
+  <button class="nav-item" onclick="showPage('page-settings')" id="nav-settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/>
+    </svg>
+    <span class="nav-label">SETTINGS</span>
+  </button>
+</nav>
+
+<script>
+  // DEMO DATA
+  const state = {
+    jobs: [
+      { id: 1, type: 'Distillation', inputTag: '1A406030000E7B4000000001', outputItem: 'Distillate — Full Spectrum', inputQty: 500, outputQty: 120, unit: 'Grams', status: 'active', date: '2026-05-06' },
+      { id: 2, type: 'Extraction', inputTag: '1A406030000E7B4000000002', outputItem: 'Live Resin', inputQty: 300, outputQty: 85, unit: 'Grams', status: 'pending', date: '2026-05-05' },
+      { id: 3, type: 'Packaging', inputTag: '1A406030000E7B4000000003', outputItem: 'Vape Cartridge — 1g', inputQty: 200, outputQty: 180, unit: 'Each', status: 'done', date: '2026-05-04' },
+    ],
+    tags: [
+      { id: '1A406030000E7B4000000010', status: 'available' },
+      { id: '1A406030000E7B4000000011', status: 'available' },
+      { id: '1A406030000E7B4000000012', status: 'available' },
+      { id: '1A406030000E7B4000000001', status: 'used' },
+      { id: '1A406030000E7B4000000002', status: 'used' },
+    ],
+    items: [
+      { name: 'Distillate — Full Spectrum', category: 'Concentrate (weight)', uom: 'Grams' },
+      { name: 'Distillate — Broad Spectrum', category: 'Concentrate (weight)', uom: 'Grams' },
+      { name: 'Live Resin', category: 'Concentrate (weight)', uom: 'Grams' },
+      { name: 'RSO', category: 'Concentrate (weight)', uom: 'Grams' },
+      { name: 'Vape Cartridge — 1g', category: 'Vape Cartridge', uom: 'Each' },
+      { name: 'Tincture 1:1 30ml', category: 'Tincture', uom: 'Milliliters' },
+      { name: 'Gummy — 10mg THC', category: 'Edible (each)', uom: 'Each' },
+    ],
+    strains: [
+      { name: 'Blue Dream', indica: 30, sativa: 70, thc: 22.4, cbd: 0.1 },
+      { name: 'OG Kush', indica: 75, sativa: 25, thc: 24.1, cbd: 0.2 },
+      { name: 'Gelato #41', indica: 55, sativa: 45, thc: 26.3, cbd: 0.1 },
+      { name: 'Wedding Cake', indica: 60, sativa: 40, thc: 25.8, cbd: 0.3 },
+      { name: 'Zkittlez', indica: 70, sativa: 30, thc: 23.5, cbd: 0.4 },
+    ]
+  };
+
+  // Set greeting
+  function setGreeting() {
+    const now = new Date();
+    const h = now.getHours();
+    const greeting = h < 12 ? 'MORNING' : h < 17 ? 'AFTERNOON' : 'EVENING';
+    document.getElementById('greeting-time').textContent = greeting;
+    document.getElementById('greeting-date').textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }).toUpperCase();
+  }
+
+  // Show/hide pages
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    const navMap = { 'page-dashboard': 'nav-dashboard', 'page-jobs': 'nav-jobs', 'page-tags': 'nav-tags', 'page-items': 'nav-items', 'page-strains': 'nav-items', 'page-settings': 'nav-settings' };
+    if (navMap[pageId]) document.getElementById(navMap[pageId]).classList.add('active');
+    window.scrollTo(0, 0);
+    renderAll();
+  }
+
+  // Toast
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  // Render jobs
+  function renderJobs() {
+    const icons = { Extraction: '🧪', Distillation: '⚗️', Infusion: '💧', Trimming: '✂️', Packaging: '📦', Other: '⚙️' };
+    const html = state.jobs.map(j => `
+      <div class="job-card">
+        <div class="job-icon">${icons[j.type] || '⚙️'}</div>
+        <div class="job-info">
+          <div class="job-name">${j.type}</div>
+          <div class="job-meta">${j.outputItem} · ${j.outputQty} ${j.unit}</div>
+          <div class="job-meta">${j.date}</div>
+        </div>
+        <span class="job-badge badge-${j.status}">${j.status.toUpperCase()}</span>
+      </div>
+    `).join('');
+    const el = document.getElementById('jobs-list');
+    if (el) el.innerHTML = html;
+    const recent = document.getElementById('recent-jobs-list');
+    if (recent) recent.innerHTML = state.jobs.slice(0,2).map(j => `
+      <div class="job-card">
+        <div class="job-icon">${icons[j.type] || '⚙️'}</div>
+        <div class="job-info">
+          <div class="job-name">${j.type}</div>
+          <div class="job-meta">${j.outputItem} · ${j.outputQty} ${j.unit}</div>
+        </div>
+        <span class="job-badge badge-${j.status}">${j.status.toUpperCase()}</span>
+      </div>
+    `).join('');
+  }
+
+  // Render tags
+  function renderTags() {
+    const el = document.getElementById('tags-list');
+    if (!el) return;
+    el.innerHTML = state.tags.map(t => `
+      <div class="tag-item">
+        <div class="tag-number">${t.id}</div>
+        <span class="tag-status ${t.status === 'used' ? 'used' : ''}">${t.status.toUpperCase()}</span>
+      </div>
+    `).join('');
+  }
+
+  // Render items
+  function renderItems() {
+    const el = document.getElementById('items-list');
+    if (!el) return;
+    el.innerHTML = state.items.map(i => `
+      <div class="list-item">
+        <div class="list-dot"></div>
+        <div class="list-name">${i.name}</div>
+        <div class="list-meta">${i.uom}</div>
+      </div>
+    `).join('');
+  }
+
+  // Render strains
+  function renderStrains() {
+    const el = document.getElementById('strains-list');
+    if (!el) return;
+    el.innerHTML = state.strains.map(s => `
+      <div class="list-item">
+        <div class="list-dot" style="background: hsl(${s.sativa * 1.2}deg, 70%, 55%)"></div>
+        <div class="list-info" style="flex:1">
+          <div class="list-name">${s.name}</div>
+          <div class="job-meta">${s.indica}% IND / ${s.sativa}% SAT · THC ${s.thc}%</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Update stats
+  function updateStats() {
+    document.getElementById('stat-jobs').textContent = state.jobs.filter(j => j.status === 'active').length;
+    document.getElementById('stat-tags').textContent = state.tags.filter(t => t.status === 'available').length;
+    document.getElementById('stat-items').textContent = state.items.length;
+    document.getElementById('stat-strains').textContent = state.strains.length;
+  }
+
+  function renderAll() {
+    renderJobs(); renderTags(); renderItems(); renderStrains(); updateStats();
+  }
+
+  // Create job
+  function createJob() {
+    const type = document.getElementById('job-type').value;
+    const inputTag = document.getElementById('job-input-tag').value;
+    const outputItem = document.getElementById('job-output-item').value;
+    const inputQty = document.getElementById('job-input-qty').value;
+    const outputQty = document.getElementById('job-output-qty').value;
+    const unit = document.getElementById('job-unit').value;
+    if (!type || !outputItem || !inputQty || !outputQty) { showToast('⚠️ Fill in required fields'); return; }
+    state.jobs.unshift({ id: Date.now(), type, inputTag, outputItem, inputQty: parseFloat(inputQty), outputQty: parseFloat(outputQty), unit, status: 'active', date: new Date().toISOString().split('T')[0] });
+    document.getElementById('job-type').value = '';
+    document.getElementById('job-input-qty').value = '';
+    document.getElementById('job-output-qty').value = '';
+    document.getElementById('job-output-item').value = '';
+    document.getElementById('job-notes').value = '';
+    showToast('✅ Processing job created');
+    renderAll();
+  }
+
+  // Create tag
+  function createTag() {
+    const label = document.getElementById('tag-label').value;
+    const qty = document.getElementById('tag-qty').value;
+    if (!label || !qty) { showToast('⚠️ Fill in required fields'); return; }
+    const fakeTag = '1A4060300' + Math.random().toString(36).substr(2,15).toUpperCase();
+    state.tags.unshift({ id: fakeTag, status: 'available', label });
+    document.getElementById('tag-label').value = '';
+    document.getElementById('tag-qty').value = '';
+    showToast('✅ Package tag created: ' + fakeTag.slice(0,16) + '...');
+    renderAll();
+  }
+
+  // Create item
+  function createItem() {
+    const name = document.getElementById('item-name').value;
+    const category = document.getElementById('item-category').value;
+    const uom = document.getElementById('item-uom').value;
+    if (!name || !category) { showToast('⚠️ Fill in required fields'); return; }
+    state.items.unshift({ name, category, uom });
+    document.getElementById('item-name').value = '';
+    document.getElementById('item-category').value = '';
+    showToast('✅ Item created: ' + name);
+    renderAll();
+  }
+
+  // Create strain
+  function createStrain() {
+    const name = document.getElementById('strain-name').value;
+    const indica = parseInt(document.getElementById('strain-indica').value) || 50;
+    const sativa = parseInt(document.getElementById('strain-sativa').value) || 50;
+    const thc = parseFloat(document.getElementById('strain-thc').value) || 0;
+    const cbd = parseFloat(document.getElementById('strain-cbd').value) || 0;
+    if (!name) { showToast('⚠️ Strain name required'); return; }
+    if (indica + sativa !== 100) { showToast('⚠️ Indica + Sativa must = 100%'); return; }
+    state.strains.unshift({ name, indica, sativa, thc, cbd });
+    document.getElementById('strain-name').value = '';
+    document.getElementById('strain-indica').value = '';
+    document.getElementById('strain-sativa').value = '';
+    document.getElementById('strain-thc').value = '';
+    document.getElementById('strain-cbd').value = '';
+    showToast('✅ Strain created: ' + name);
+    renderAll();
+  }
+
+  // Save settings
+  function saveSettings() {
+    const key = document.getElementById('api-key-input').value;
+    const license = document.getElementById('license-input').value;
+    const biz = document.getElementById('biz-name-input').value;
+    if (key) {
+      localStorage.setItem('metrc_key', key);
+      document.getElementById('mode-display').textContent = 'LIVE — api-mt.metrc.com';
+      document.querySelector('.status-label').textContent = 'LIVE';
+    }
+    if (license) localStorage.setItem('metrc_license', license);
+    if (biz) localStorage.setItem('metrc_biz', biz);
+    showToast('✅ Settings saved');
+  }
+
+  // Set today's date on tag form
+  document.getElementById('tag-date').value = new Date().toISOString().split('T')[0];
+
+  // Load saved settings
+  const savedKey = localStorage.getItem('metrc_key');
+  if (savedKey) {
+    document.getElementById('api-key-input').value = savedKey;
+    document.getElementById('mode-display').textContent = 'LIVE — api-mt.metrc.com';
+  }
+  const savedLicense = localStorage.getItem('metrc_license');
+  if (savedLicense) document.getElementById('license-input').value = savedLicense;
+  const savedBiz = localStorage.getItem('metrc_biz');
+  if (savedBiz) document.getElementById('biz-name-input').value = savedBiz;
+
+  setGreeting();
+  renderAll();
+</script>
+</body>
+</html>
